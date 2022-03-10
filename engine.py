@@ -2,7 +2,7 @@ import torch
 from tqdm import tqdm
 
 
-def train_fn(data_loader, model, optimizer, device, scheduler):
+def train_fn(data_loader, model, optimizer, device, scheduler=None):
     model.train()
     final_loss = 0
     for data in tqdm(data_loader, total=len(data_loader)):
@@ -11,8 +11,11 @@ def train_fn(data_loader, model, optimizer, device, scheduler):
         optimizer.zero_grad()
         loss = model(data)
         loss.backward()
+        
+        #CRF
+        torch.nn.utils.clip_grad_norm_(parameters=model.parameters(), max_norm=3)
         optimizer.step()
-        scheduler.step()
+        # scheduler.step()
         final_loss += loss.item()
     return final_loss / len(data_loader)
 
