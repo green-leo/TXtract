@@ -15,6 +15,7 @@ class SeqSelfAttention(nn.Module):
     
     def __init__(self, cfg, return_attention=False):
         super(SeqSelfAttention, self).__init__()
+        self.device = torch.device(cfg.DEVICE)
         self.return_attention = return_attention
         self.d = cfg.HIDDEN_DIM
         self.p = cfg.ATTN_DIM
@@ -51,20 +52,16 @@ class SeqSelfAttention(nn.Module):
         W2Ht = self.W2(inputs)                                      # [batch_size, t, p]
         W2Ht = torch.unsqueeze(W2Ht, 1)                             # for W1ht + W2ht [batch_size, 1, t, p]
 
-        W3ec = torch.zeros(batch_size, self.p)
+        W3ec = torch.zeros(batch_size, self.p).to(self.device)
         if ec != None:
             W3ec = self.W3(ec)                                      # [batch_size, p]
         
         # print(W1Ht.shape, W2Ht.shape, W3ec.shape)
-
         W3ec = W3ec.tile(1, t * t)                                         # [batch_size*1, p*t*t]
-
         # print(W3ec.shape)
-
         W3ec = W3ec.reshape(batch_size, t, t, self.p)                      # expand w3ec to [txt], no batch_sum provided
 
-        
-
+        # g(t,t_)
         Gt = torch.tanh(W1Ht + W2Ht + W3ec)                         # [batch_size, t, t, p]
 
         # α(t,t_) = σ(wTα x g(t,t_) + bα), t, t_ = 1..T
@@ -74,7 +71,6 @@ class SeqSelfAttention(nn.Module):
         
         At = torch.softmax(At, dim=-1)                                      # [batch_size, t, t]
         # At = torch.sigmoid(At)
-        
         
         # h_(t) = Σ(t_=1->T) α(t,t_) · ht_
         Ht_ = torch.bmm(At, inputs)                                 # [batch_size, t, d]
