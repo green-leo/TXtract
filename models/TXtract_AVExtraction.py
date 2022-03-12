@@ -8,6 +8,7 @@ from torchcrf import CRF
 class TXtract_AVExtraction(nn.Module):
     def __init__(self, cfg):
         super(TXtract_AVExtraction, self).__init__()
+        self.device = torch.device(cfg.DEVICE)
         self.use_cate = cfg.USE_CATE
         self.return_attention = cfg.RETURN_ATTENTION
         self.embedding_dim = cfg.EMBEDDING_DIM
@@ -46,8 +47,12 @@ class TXtract_AVExtraction(nn.Module):
 
         # crf
         logits = self.dropout(h_)
+
+        # logits = self.dropout(h)
         logits = self.hidden2tag(logits)
-        loss = - self.crf(logits, tags)
+
+        crfmasks = torch.where(masks==1,True,False)
+        loss = - self.crf(logits, tags, mask=crfmasks, reduction='token_mean')
 
         return loss 
 
@@ -75,10 +80,16 @@ class TXtract_AVExtraction(nn.Module):
         
         # crf
         logits = self.dropout(h_)
+        
+        # logits = self.dropout(h)
         logits = self.hidden2tag(logits)
-        outputs = self.crf.decode(logits)
+
+        crfmasks = torch.where(masks==1,True,False)
+        outputs = self.crf.decode(logits,mask=crfmasks)
 
         if self.return_attention:
             return outputs, attn
         
         return outputs 
+
+# end class
