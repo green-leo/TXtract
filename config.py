@@ -13,7 +13,7 @@ class DefaultConfig(object):
     
     MODEL_NAME = 'TXtract'
     USE_CATE = False
-    RETURN_ATTENTION = True
+    RETURN_ATTENTION = False
 
     PRETRAINED_BERT_NAME = 'phobert-base'
     PRETRAINED_MODEL_DIR = './pretrained_model'
@@ -24,24 +24,24 @@ class DefaultConfig(object):
     pickle_path = '???'
     load_model_path = None          # trained model
 
-    TRAIN_BATCH_SIZE = 32                 # batch size
+    TRAIN_BATCH_SIZE = 8                 # batch size
     VALID_BATCH_SIZE = 8
-    MAX_LEN = 256
+    MAX_LEN = 60
     EMBEDDING_DIM = 768             # Bert
     HIDDEN_DIM = 1024               # BiLSTM
     ATTN_DIM = 32                   # SeqSelfAttention
     CATE_DIM = 1                    # Poincare Ball
 
-    LABELS = ['type', 'name']
-    TAGS = [bie + '-' + label for label in LABELS for bie in ['B', 'I', 'E']]
-    TAGS.append('O')
+    LABELS = ['type', 'form', 'pattern', 'gender']
+    TAGS = ['O']
+    TAGS.extend([bie + '-' + label for label in LABELS for bie in ['B', 'I', 'E']])
     # TAGSET_SIZE = len(LABELS)*3 + 1 # BIOE tagging, 3-B,I,E for each label, 1-O for other
     TAGSET_SIZE = len(TAGS)
 
     DEVICE = "cpu"
     USE_GPU = False
 
-    NUM_WORKERS = 0                 # how many workers for loading data,  # cpu only, 0 for easy loading
+    NUM_WORKERS = 2                 # how many workers for loading data,  # cpu only, 0 for easy loading
     PRINT_FREQ = 100                # print info every N batch
 
     EPOCHS = 20
