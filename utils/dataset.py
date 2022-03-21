@@ -20,7 +20,9 @@ class EntityDataset:
         self.texts = texts
         self.tags = tags
         self.tokenizer = cfg.TOKENIZER
+        self.poincare = cfg.POINCARE_BALL_EMBEDDING
         self.max_len = cfg.MAX_LEN
+        self.cate_dim = cfg.CATE_DIM
         self.cls_id, self.sep_id = get_special_token_ids(self.tokenizer)
 
     
@@ -32,12 +34,17 @@ class EntityDataset:
         text = self.texts[item]
         tag = self.tags[item]
 
+        try:
+            cate = self.poincare.kv[str(cate)]
+        except:
+            cate = [0]*self.cate_dim
+
         ids = []
         target_tag =[]
         
         for i, s in enumerate(text):
             inputs = self.tokenizer.encode(
-                s,
+                str(s),
                 add_special_tokens=False
             )
             # a word can be encoded to one or many ids
