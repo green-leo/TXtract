@@ -5,6 +5,7 @@ import torch
 import os
 from transformers import AutoTokenizer
 from pytorch_pretrained_bert import WEIGHTS_NAME, CONFIG_NAME
+from gensim.models.poincare import PoincareModel, PoincareRelations
 
 
 class DefaultConfig(object):
@@ -15,8 +16,15 @@ class DefaultConfig(object):
     USE_CATE = False
     RETURN_ATTENTION = False
 
-    PRETRAINED_BERT_NAME = 'phobert-base'
     PRETRAINED_MODEL_DIR = './pretrained_model'
+
+    CATE_HYPERNYM_FILE_PATH = './data/cate_hypernyms.tsv'
+    PRETRAINED_POINCARE_BALL_NAME = 'poincare_model.model'
+    PRETRAINED_POINCARE_BALL_PATH = os.path.join(PRETRAINED_MODEL_DIR, PRETRAINED_POINCARE_BALL_NAME)
+    POINCARE_BALL_EMBEDDING = PoincareModel.load(PRETRAINED_POINCARE_BALL_PATH)
+
+
+    PRETRAINED_BERT_NAME = 'phobert-base'
     BASE_MODEL_PATH = os.path.join(PRETRAINED_MODEL_DIR, PRETRAINED_BERT_NAME)
     TOKENIZER = AutoTokenizer.from_pretrained(BASE_MODEL_PATH, use_fast=False, do_lower_case=True)
     
@@ -24,13 +32,13 @@ class DefaultConfig(object):
     pickle_path = '???'
     load_model_path = None          # trained model
 
-    TRAIN_BATCH_SIZE = 8                 # batch size
+    TRAIN_BATCH_SIZE = 8            # batch size
     VALID_BATCH_SIZE = 8
     MAX_LEN = 60
     EMBEDDING_DIM = 768             # Bert
     HIDDEN_DIM = 1024               # BiLSTM
-    ATTN_DIM = 32                   # SeqSelfAttention
-    CATE_DIM = 1                    # Poincare Ball
+    ATTN_DIM = 50                   # SeqSelfAttention  # p
+    CATE_DIM = 50                   # Poincare Ball     # m
 
     LABELS = ['type', 'form', 'pattern', 'gender']
     TAGS = ['O']
