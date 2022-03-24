@@ -52,10 +52,12 @@ class SeqSelfAttention(nn.Module):
         W2Ht = self.W2(inputs)                                      # [batch_size, t, p]
         W2Ht = torch.unsqueeze(W2Ht, 1)                             # for W1ht + W2ht [batch_size, 1, t, p]
 
-        W3ec = torch.zeros(batch_size, self.p).to(self.device)
+        
         if ec != None:
             W3ec = self.W3(ec)                                      # [batch_size, p]
-        
+        else:
+            W3ec = torch.zeros(batch_size, self.p).to(self.device)
+            
         # print(W1Ht.shape, W2Ht.shape, W3ec.shape)
         W3ec = W3ec.tile(1, t * t)                                         # [batch_size*1, p*t*t]
         # print(W3ec.shape)

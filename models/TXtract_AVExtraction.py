@@ -87,8 +87,8 @@ class TXtract_AVExtraction(nn.Module):
         crfmasks = torch.where(masks==1,True,False)
         outputs = self.crf.decode(logits,mask=crfmasks)
 
-        if self.return_attention:
-            return outputs, attn
+        # if self.return_attention:
+        #     return outputs, attn
         
         return outputs 
 
