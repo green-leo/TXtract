@@ -14,7 +14,7 @@ from config import cfg
 from utils import EntityDataset
 import engine
 from models import TXtract_AVExtraction
-
+import eval
 
 def process_data(data_path):
     df = pd.read_csv(data_path, encoding="utf-8")
@@ -35,6 +35,16 @@ def process_data(data_path):
     tags = df.groupby("id")["tag"].apply(list).values
 
     return cates, sentences, tags, enc_tag
+
+
+def evaluate_model(valid_dataset, enc_tag):
+    device = torch.device(cfg.DEVICE)
+    model = TXtract_AVExtraction(cfg)
+    model.load_state_dict(torch.load(cfg.MODEL_PATH))
+    model.to(device)
+
+    matrix = eval.compute_matrix(device, model, valid_dataset, enc_tag)
+    return matrix
 
 
 if __name__ == "__main__":
@@ -110,3 +120,9 @@ if __name__ == "__main__":
         if test_loss < best_loss:
             torch.save(model.state_dict(), cfg.MODEL_PATH)
             best_loss = test_loss
+
+
+
+    ### Evaluating    
+    matrix = evaluate_model(valid_dataset, enc_tag)
+    print(matrix)
