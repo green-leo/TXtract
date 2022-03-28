@@ -6,7 +6,7 @@ A Pytorch implementation of ["TXtract: Taxonomy-Aware Knowledge Extraction for T
 
 ### Structure of the model
 
-![](https://lfs.aminer.cn/upload/pdf_image/5eaa/1d5/5eaaa1d591e011fa9e15e91aimg-002.png)
+![](models/TxTract_model.png)
 
 
 
